@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-space), system-ui, sans-serif;
+  background: radial-gradient(circle at top, rgba(110, 231, 255, 0.14), transparent 45%),
+    radial-gradient(circle at 10% 20%, rgba(255, 184, 107, 0.2), transparent 40%),
+    #0c0f14;
+  color: #eef2f5;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.35;
+}
+
+h1,
+.h1 {
+  font-family: var(--font-fraunces), serif;
+}

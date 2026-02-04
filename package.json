@@ -1,0 +1,25 @@
+{
+  "name": "expense-ai-tracker",
+  "private": true,
+  "packageManager": "pnpm@10.16.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "format": "biome format --write .",
+    "check": "biome check ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.0.0",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.31.8",
+    "turbo": "^2.2.3",
+    "typescript": "^5.6.3"
+  }
+}
