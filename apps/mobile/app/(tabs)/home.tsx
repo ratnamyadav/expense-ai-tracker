@@ -1,11 +1,9 @@
 import { parseTransactionLocally } from "@acme/api";
-import { EditEntryModal, type EditableEntry } from "../../src/components/EditEntryModal";
-import { trpc } from "../../src/lib/trpc";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ExpoSpeechRecognitionModule,
   isRecognitionAvailable,
-  useSpeechRecognitionEvent
+  useSpeechRecognitionEvent,
 } from "expo-speech-recognition";
 import { useState } from "react";
 import {
@@ -16,8 +14,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
+import { EditEntryModal, type EditableEntry } from "../../src/components/EditEntryModal";
+import { trpc } from "../../src/lib/trpc";
 import { useChatStore } from "../../src/stores/chat";
 
 function getCurrentMonth() {
@@ -30,7 +30,7 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value);
 }
 
@@ -48,7 +48,7 @@ export default function HomeScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["summary", month] });
       queryClient.invalidateQueries({ queryKey: ["transactions", month] });
-    }
+    },
   });
 
   const parseMutation = trpc.ai.parseTransaction.useMutation();
@@ -70,10 +70,7 @@ export default function HomeScreen() {
 
   useSpeechRecognitionEvent("error", () => {
     setListening(false);
-    Alert.alert(
-      "Voice input",
-      "Speech recognition failed. Try again or type your message."
-    );
+    Alert.alert("Voice input", "Speech recognition failed. Try again or type your message.");
   });
 
   async function handleSend() {
@@ -95,15 +92,14 @@ export default function HomeScreen() {
     if (!parsed.amount || !parsed.type) {
       addMessage({
         role: "assistant",
-        content:
-          "I need the amount and whether it's income or expense. Can you clarify?"
+        content: "I need the amount and whether it's income or expense. Can you clarify?",
       });
       return;
     }
 
     addMessage({
       role: "assistant",
-      content: "Confirm the details below before saving."
+      content: "Confirm the details below before saving.",
     });
 
     setPending({
@@ -113,7 +109,7 @@ export default function HomeScreen() {
       subcategory: parsed.subcategory,
       date: parsed.date ?? new Date().toISOString().slice(0, 10),
       paymentMode: parsed.payment_mode ?? "unknown",
-      notes: null
+      notes: null,
     });
   }
 
@@ -128,15 +124,12 @@ export default function HomeScreen() {
         paymentMode: entry.paymentMode,
         date: entry.date,
         notes: entry.notes,
-        source: "chat"
+        source: "chat",
       });
       setPending(null);
       setEditing(false);
     } catch (err) {
-      Alert.alert(
-        "Unable to save",
-        err instanceof Error ? err.message : "Try again"
-      );
+      Alert.alert("Unable to save", err instanceof Error ? err.message : "Try again");
     }
   }
 
@@ -151,21 +144,14 @@ export default function HomeScreen() {
     }
 
     if (!(await isRecognitionAvailable())) {
-      Alert.alert(
-        "Voice input",
-        "Speech recognition is unavailable on this device."
-      );
+      Alert.alert("Voice input", "Speech recognition is unavailable on this device.");
       return;
     }
 
-    const permission =
-      await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+    const permission = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert(
-        "Voice input",
-        "Microphone permission is required to use voice input."
-      );
+      Alert.alert("Voice input", "Microphone permission is required to use voice input.");
       return;
     }
 
@@ -173,14 +159,11 @@ export default function HomeScreen() {
       await ExpoSpeechRecognitionModule.start({
         lang: "en-IN",
         interimResults: true,
-        maxAlternatives: 1
+        maxAlternatives: 1,
       });
     } catch {
       setListening(false);
-      Alert.alert(
-        "Voice input",
-        "Speech recognition failed to start. Please try again."
-      );
+      Alert.alert("Voice input", "Speech recognition failed to start. Please try again.");
     }
   }
 
@@ -188,16 +171,10 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text className="text-xs uppercase tracking-[0.35em] text-white/60">
-        Expense AI Tracker
-      </Text>
+      <Text style={styles.eyebrow}>Expense AI Tracker</Text>
       <View style={styles.card}>
         <Text style={styles.label}>Month</Text>
-        <TextInput
-          value={month}
-          onChangeText={setMonth}
-          style={styles.input}
-        />
+        <TextInput value={month} onChangeText={setMonth} style={styles.input} />
         <Text style={styles.balanceLabel}>Net balance</Text>
         <Text style={styles.balanceValue}>
           {summary ? formatCurrency(summary.netBalance) : "--"}
@@ -214,17 +191,9 @@ export default function HomeScreen() {
           keyExtractor={(_, index) => `msg-${index}`}
           contentContainerStyle={{ gap: 8 }}
           renderItem={({ item }) => (
-            <View
-              style={
-                item.role === "user" ? styles.userBubble : styles.assistantBubble
-              }
-            >
+            <View style={item.role === "user" ? styles.userBubble : styles.assistantBubble}>
               <Text
-                style={
-                  item.role === "user"
-                    ? styles.userBubbleText
-                    : styles.assistantBubbleText
-                }
+                style={item.role === "user" ? styles.userBubbleText : styles.assistantBubbleText}
               >
                 {item.content}
               </Text>
@@ -238,26 +207,16 @@ export default function HomeScreen() {
               {pending.type} - INR {pending.amount}
             </Text>
             <Text style={styles.confirmText}>
-              {pending.category ?? "Uncategorized"} - {pending.paymentMode} -{" "}
-              {pending.date}
+              {pending.category ?? "Uncategorized"} - {pending.paymentMode} - {pending.date}
             </Text>
             <View style={styles.confirmActions}>
-              <Pressable
-                onPress={() => setPending(null)}
-                style={styles.secondaryButton}
-              >
+              <Pressable onPress={() => setPending(null)} style={styles.secondaryButton}>
                 <Text style={styles.secondaryButtonText}>Discard</Text>
               </Pressable>
-              <Pressable
-                onPress={() => setEditing(true)}
-                style={styles.secondaryButton}
-              >
+              <Pressable onPress={() => setEditing(true)} style={styles.secondaryButton}>
                 <Text style={styles.secondaryButtonText}>Edit</Text>
               </Pressable>
-              <Pressable
-                onPress={() => handleSave(pending)}
-                style={styles.primaryButton}
-              >
+              <Pressable onPress={() => handleSave(pending)} style={styles.primaryButton}>
                 <Text style={styles.primaryButtonText}>Save</Text>
               </Pressable>
             </View>
@@ -273,17 +232,15 @@ export default function HomeScreen() {
             style={styles.chatInput}
           />
           <Pressable onPress={handleVoice} style={styles.iconButton}>
-            <Text style={styles.iconButtonText}>
-              {listening ? "Stop" : "Voice"}
-            </Text>
+            <Text style={styles.iconButtonText}>{listening ? "Stop" : "Voice"}</Text>
           </Pressable>
           <Pressable onPress={handleSend} style={styles.primaryButton}>
             <Text style={styles.primaryButtonText}>Send</Text>
           </Pressable>
         </View>
         <Text style={styles.disclaimer}>
-          AI suggestions are drafts only. You must confirm before saving. Voice
-          input stays on device and no audio is stored.
+          AI suggestions are drafts only. You must confirm before saving. Voice input stays on
+          device and no audio is stored.
         </Text>
       </View>
 
@@ -303,24 +260,30 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  eyebrow: {
+    fontSize: 12,
+    textTransform: "uppercase",
+    letterSpacing: 4.2,
+    color: "rgba(255,255,255,0.6)",
+  },
   container: {
     flex: 1,
     backgroundColor: "#0c0f14",
     padding: 16,
-    gap: 12
+    gap: 12,
   },
   card: {
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
     backgroundColor: "rgba(255,255,255,0.05)",
-    padding: 16
+    padding: 16,
   },
   label: {
     color: "rgba(248,250,252,0.6)",
     textTransform: "uppercase",
     fontSize: 10,
-    letterSpacing: 1.5
+    letterSpacing: 1.5,
   },
   input: {
     marginTop: 8,
@@ -329,24 +292,24 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.15)",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    color: "#f8fafc"
+    color: "#f8fafc",
   },
   balanceLabel: {
     marginTop: 12,
     color: "rgba(248,250,252,0.6)",
     fontSize: 12,
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
   balanceValue: {
     marginTop: 6,
     fontSize: 24,
     color: "#f8fafc",
-    fontWeight: "600"
+    fontWeight: "600",
   },
   balanceHint: {
     marginTop: 4,
     color: "rgba(248,250,252,0.6)",
-    fontSize: 12
+    fontSize: 12,
   },
   chatCard: {
     flex: 1,
@@ -355,55 +318,55 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.1)",
     backgroundColor: "rgba(255,255,255,0.04)",
     padding: 16,
-    gap: 12
+    gap: 12,
   },
   userBubble: {
     alignSelf: "flex-end",
     backgroundColor: "#f8fafc",
     borderRadius: 16,
     padding: 10,
-    maxWidth: "80%"
+    maxWidth: "80%",
   },
   assistantBubble: {
     alignSelf: "flex-start",
     backgroundColor: "rgba(255,255,255,0.12)",
     borderRadius: 16,
     padding: 10,
-    maxWidth: "80%"
+    maxWidth: "80%",
   },
   userBubbleText: {
     color: "#0c0f14",
-    fontSize: 12
+    fontSize: 12,
   },
   assistantBubbleText: {
     color: "#f8fafc",
-    fontSize: 12
+    fontSize: 12,
   },
   confirmation: {
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
-    padding: 12
+    padding: 12,
   },
   confirmTitle: {
     color: "#f8fafc",
-    fontWeight: "600"
+    fontWeight: "600",
   },
   confirmText: {
     marginTop: 4,
     color: "rgba(248,250,252,0.6)",
-    fontSize: 12
+    fontSize: 12,
   },
   confirmActions: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginTop: 8
+    marginTop: 8,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8
+    gap: 8,
   },
   chatInput: {
     flex: 1,
@@ -412,44 +375,44 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.15)",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    color: "#f8fafc"
+    color: "#f8fafc",
   },
   iconButton: {
     borderRadius: 14,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
     paddingHorizontal: 12,
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   iconButtonText: {
     color: "#f8fafc",
-    fontSize: 12
+    fontSize: 12,
   },
   primaryButton: {
     borderRadius: 14,
     backgroundColor: "#f8fafc",
     paddingHorizontal: 12,
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   primaryButtonText: {
     color: "#0c0f14",
     fontWeight: "600",
-    fontSize: 12
+    fontSize: 12,
   },
   secondaryButton: {
     borderRadius: 14,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
     paddingHorizontal: 12,
-    paddingVertical: 6
+    paddingVertical: 6,
   },
   secondaryButtonText: {
     color: "#f8fafc",
-    fontSize: 12
+    fontSize: 12,
   },
   disclaimer: {
     marginTop: 8,
     color: "rgba(248,250,252,0.6)",
-    fontSize: 11
-  }
+    fontSize: 11,
+  },
 });

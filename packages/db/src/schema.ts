@@ -8,14 +8,10 @@ import {
   pgTable,
   text,
   timestamp,
-  uuid
+  uuid,
 } from "drizzle-orm/pg-core";
 
-export const transactionType = pgEnum("transaction_type", [
-  "expense",
-  "income",
-  "refund"
-]);
+export const transactionType = pgEnum("transaction_type", ["expense", "income", "refund"]);
 
 export const paymentMode = pgEnum("payment_mode", [
   "cash",
@@ -23,7 +19,7 @@ export const paymentMode = pgEnum("payment_mode", [
   "card",
   "bank",
   "wallet",
-  "unknown"
+  "unknown",
 ]);
 
 export const subscriptionStatus = pgEnum("subscription_status", [
@@ -31,7 +27,7 @@ export const subscriptionStatus = pgEnum("subscription_status", [
   "trial",
   "active",
   "canceled",
-  "past_due"
+  "past_due",
 ]);
 
 export const user = pgTable("user", {
@@ -40,14 +36,10 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   consentAcceptedAt: timestamp("consent_accepted_at", { withTimezone: true }),
-  consentVersion: text("consent_version")
+  consentVersion: text("consent_version"),
 });
 
 export const session = pgTable("session", {
@@ -59,12 +51,8 @@ export const session = pgTable("session", {
   token: text("token").notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const account = pgTable("account", {
@@ -77,15 +65,13 @@ export const account = pgTable("account", {
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at", { withTimezone: true }),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { withTimezone: true }),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
   scope: text("scope"),
   password: text("password"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const verification = pgTable("verification", {
@@ -93,12 +79,8 @@ export const verification = pgTable("verification", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const transaction = pgTable("transaction", {
@@ -115,12 +97,8 @@ export const transaction = pgTable("transaction", {
   date: date("date").notNull(),
   notes: text("notes"),
   source: text("source").notNull().default("chat"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const aiLog = pgTable("ai_log", {
@@ -132,9 +110,7 @@ export const aiLog = pgTable("ai_log", {
   output: jsonb("output").notNull(),
   provider: text("provider").notNull(),
   confidence: numeric("confidence", { precision: 4, scale: 3 }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const subscription = pgTable("subscription", {
@@ -149,15 +125,11 @@ export const subscription = pgTable("subscription", {
   entriesLimit: integer("entries_limit").notNull().default(50),
   entriesUsed: integer("entries_used").notNull().default(0),
   currentPeriodStart: timestamp("current_period_start", {
-    withTimezone: true
+    withTimezone: true,
   }),
   currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export type User = typeof user.$inferSelect;

@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -6,12 +8,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
 import { authClient } from "../src/lib/auth-client";
 import { trpc } from "../src/lib/trpc";
-import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -28,10 +28,11 @@ export default function LoginScreen() {
     setError(null);
     setLoading(true);
     try {
-      await authClient.emailOtp.sendVerificationOtp({
+      const result = await authClient.emailOtp.sendVerificationOtp({
         email,
-        type: "sign-in"
+        type: "sign-in",
       });
+      if (result.error) throw new Error(result.error.message ?? "Unable to send code");
       setStep("otp");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to send code");
@@ -44,10 +45,11 @@ export default function LoginScreen() {
     setError(null);
     setLoading(true);
     try {
-      await authClient.signIn.emailOtp({
+      const result = await authClient.signIn.emailOtp({
         email,
-        otp
+        otp,
       });
+      if (result.error) throw new Error(result.error.message ?? "Unable to verify code");
       if (accepted) {
         await consentMutation.mutateAsync({ version: "v1" });
       }
@@ -67,7 +69,8 @@ export default function LoginScreen() {
     }
     try {
       await AsyncStorage.setItem("consent:pending", "v1");
-      await authClient.signIn.social({ provider });
+      const result = await authClient.signIn.social({ provider });
+      if (result.error) throw new Error(result.error.message ?? "Unable to sign in");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to sign in");
     }
@@ -80,10 +83,7 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>Sign in with an email OTP.</Text>
 
         <Pressable
-          style={[
-            styles.socialButton,
-            !googleEnabled && styles.socialDisabled
-          ]}
+          style={[styles.socialButton, !googleEnabled && styles.socialDisabled]}
           onPress={() => handleSocial("google")}
           disabled={!googleEnabled}
         >
@@ -118,14 +118,9 @@ export default function LoginScreen() {
           />
         )}
 
-        <Pressable
-          onPress={() => setAccepted(!accepted)}
-          style={styles.checkboxRow}
-        >
+        <Pressable onPress={() => setAccepted(!accepted)} style={styles.checkboxRow}>
           <View style={[styles.checkbox, accepted && styles.checkboxActive]} />
-          <Text style={styles.checkboxText}>
-            I agree to the Terms and Privacy Policy.
-          </Text>
+          <Text style={styles.checkboxText}>I agree to the Terms and Privacy Policy.</Text>
         </Pressable>
 
         {error && <Text style={styles.error}>{error}</Text>}
@@ -153,23 +148,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0c0f14",
     justifyContent: "center",
-    padding: 24
+    padding: 24,
   },
   card: {
     backgroundColor: "rgba(255,255,255,0.06)",
     borderRadius: 24,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
-    padding: 20
+    padding: 20,
   },
   title: {
     fontSize: 24,
     color: "#f8fafc",
-    fontWeight: "600"
+    fontWeight: "600",
   },
   subtitle: {
     marginTop: 8,
-    color: "rgba(248,250,252,0.7)"
+    color: "rgba(248,250,252,0.7)",
   },
   socialButton: {
     marginTop: 12,
@@ -177,14 +172,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.15)",
     paddingVertical: 10,
-    alignItems: "center"
+    alignItems: "center",
   },
   socialText: {
     color: "#f8fafc",
-    fontSize: 13
+    fontSize: 13,
   },
   socialDisabled: {
-    opacity: 0.4
+    opacity: 0.4,
   },
   input: {
     marginTop: 16,
@@ -194,12 +189,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     color: "#f8fafc",
-    backgroundColor: "rgba(255,255,255,0.05)"
+    backgroundColor: "rgba(255,255,255,0.05)",
   },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 16
+    marginTop: 16,
   },
   checkbox: {
     width: 16,
@@ -207,28 +202,28 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.4)",
-    marginRight: 8
+    marginRight: 8,
   },
   checkboxActive: {
-    backgroundColor: "#f8fafc"
+    backgroundColor: "#f8fafc",
   },
   checkboxText: {
     color: "rgba(248,250,252,0.6)",
-    fontSize: 12
+    fontSize: 12,
   },
   error: {
     marginTop: 12,
-    color: "#fecaca"
+    color: "#fecaca",
   },
   primaryButton: {
     marginTop: 20,
     backgroundColor: "#f8fafc",
     borderRadius: 16,
     paddingVertical: 12,
-    alignItems: "center"
+    alignItems: "center",
   },
   primaryButtonText: {
     color: "#0c0f14",
-    fontWeight: "600"
-  }
+    fontWeight: "600",
+  },
 });

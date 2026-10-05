@@ -18,14 +18,13 @@ export const useChatStore = create<ChatState>()(
     (set) => ({
       messages: [],
       pending: null,
-      addMessage: (message) =>
-        set((state) => ({ messages: [...state.messages, message] })),
+      addMessage: (message) => set((state) => ({ messages: [...state.messages, message] })),
       setPending: (entry) => set({ pending: entry }),
-      reset: () => set({ messages: [], pending: null })
+      reset: () => set({ messages: [], pending: null }),
     }),
     {
       name: "chat-state",
-      storage: createJSONStorage(() => AsyncStorage)
-    }
-  )
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
 );

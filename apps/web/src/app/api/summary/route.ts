@@ -1,6 +1,6 @@
+import { requireUser } from "@/lib/session";
 import { MonthlySummarySchema } from "@acme/api";
 import { getDb, schema } from "@acme/db";
-import { requireUser } from "@/lib/session";
 import { and, eq, gte, lte } from "drizzle-orm";
 
 function getMonthRange(month: string) {
@@ -39,8 +39,8 @@ export async function GET(request: Request) {
     where: and(
       eq(schema.transaction.userId, user.id),
       gte(schema.transaction.date, range.startString),
-      lte(schema.transaction.date, range.endString)
-    )
+      lte(schema.transaction.date, range.endString),
+    ),
   });
 
   let totalIncome = 0;
@@ -65,8 +65,8 @@ export async function GET(request: Request) {
     netBalance: totalIncome - totalExpense,
     categoryBreakdown: Array.from(breakdown.entries()).map(([category, total]) => ({
       category,
-      total
-    }))
+      total,
+    })),
   });
 
   return Response.json(payload);

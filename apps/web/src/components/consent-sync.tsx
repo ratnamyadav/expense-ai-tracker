@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { useEffect } from "react";
 
 export function ConsentSync() {
   const mutation = trpc.account.acceptConsent.useMutation();

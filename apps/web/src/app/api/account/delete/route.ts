@@ -1,5 +1,5 @@
-import { getDb, schema } from "@acme/db";
 import { requireUser } from "@/lib/session";
+import { getDb, schema } from "@acme/db";
 import { eq } from "drizzle-orm";
 
 export async function POST() {

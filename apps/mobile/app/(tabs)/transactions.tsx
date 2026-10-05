@@ -1,15 +1,8 @@
-import { trpc } from "../../src/lib/trpc";
-import { EditEntryModal, type EditableEntry } from "../../src/components/EditEntryModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Pressable
-} from "react-native";
+import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import { EditEntryModal, type EditableEntry } from "../../src/components/EditEntryModal";
+import { trpc } from "../../src/lib/trpc";
 
 function getCurrentMonth() {
   const now = new Date();
@@ -20,9 +13,7 @@ function getCurrentMonth() {
 export default function TransactionsScreen() {
   const queryClient = useQueryClient();
   const [month, setMonth] = useState(getCurrentMonth());
-  const [selected, setSelected] = useState<
-    (EditableEntry & { id: string }) | null
-  >(null);
+  const [selected, setSelected] = useState<(EditableEntry & { id: string }) | null>(null);
 
   const listQuery = trpc.transactions.list.useQuery({ month });
 
@@ -30,14 +21,14 @@ export default function TransactionsScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions", month] });
       queryClient.invalidateQueries({ queryKey: ["summary", month] });
-    }
+    },
   });
 
   const deleteMutation = trpc.transactions.delete.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions", month] });
       queryClient.invalidateQueries({ queryKey: ["summary", month] });
-    }
+    },
   });
 
   const grouped = useMemo(() => {
@@ -80,7 +71,7 @@ export default function TransactionsScreen() {
                       subcategory: item.subcategory,
                       date: item.date,
                       paymentMode: item.paymentMode,
-                      notes: item.notes
+                      notes: item.notes,
                     })
                   }
                   style={styles.secondaryButton}
@@ -114,7 +105,7 @@ export default function TransactionsScreen() {
               subcategory: value.subcategory,
               paymentMode: value.paymentMode,
               date: value.date,
-              notes: value.notes
+              notes: value.notes,
             });
             setSelected(null);
           }}
@@ -129,20 +120,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0c0f14",
     padding: 16,
-    gap: 12
+    gap: 12,
   },
   card: {
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
     backgroundColor: "rgba(255,255,255,0.05)",
-    padding: 16
+    padding: 16,
   },
   label: {
     color: "rgba(248,250,252,0.6)",
     fontSize: 10,
     textTransform: "uppercase",
-    letterSpacing: 1.5
+    letterSpacing: 1.5,
   },
   input: {
     marginTop: 8,
@@ -151,51 +142,51 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.15)",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    color: "#f8fafc"
+    color: "#f8fafc",
   },
   sectionTitle: {
     color: "#f8fafc",
     fontWeight: "600",
-    marginBottom: 8
+    marginBottom: 8,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   rowTitle: {
     color: "#f8fafc",
-    fontSize: 14
+    fontSize: 14,
   },
   rowSubtitle: {
     color: "rgba(248,250,252,0.6)",
-    fontSize: 12
+    fontSize: 12,
   },
   actions: {
     flexDirection: "row",
-    gap: 8
+    gap: 8,
   },
   secondaryButton: {
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
     paddingHorizontal: 10,
-    paddingVertical: 6
+    paddingVertical: 6,
   },
   secondaryButtonText: {
     color: "#f8fafc",
-    fontSize: 12
+    fontSize: 12,
   },
   deleteButton: {
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(248,113,113,0.5)",
     paddingHorizontal: 10,
-    paddingVertical: 6
+    paddingVertical: 6,
   },
   deleteButtonText: {
     color: "#fecaca",
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 });

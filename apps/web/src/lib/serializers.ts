@@ -1,4 +1,4 @@
-import { TransactionSchema, type Transaction } from "@acme/api";
+import { type Transaction, TransactionSchema } from "@acme/api";
 import type { Transaction as DbTransaction } from "@acme/db";
 
 function toDateString(value: string | Date) {
@@ -29,6 +29,6 @@ export function serializeTransaction(row: DbTransaction): Transaction {
     notes: row.notes ?? null,
     source: row.source,
     createdAt: toIsoString(row.createdAt),
-    updatedAt: toIsoString(row.updatedAt)
+    updatedAt: toIsoString(row.updatedAt),
   });
 }

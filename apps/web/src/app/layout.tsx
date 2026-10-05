@@ -4,21 +4,21 @@ import { Providers } from "./providers";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-space"
+  variable: "--font-space",
 });
 
 const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-fraunces"
+  variable: "--font-fraunces",
 });
 
 export const metadata = {
   title: "Expense AI Tracker",
-  description: "AI-assisted expense tracking across web + mobile"
+  description: "AI-assisted expense tracking across web + mobile",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {

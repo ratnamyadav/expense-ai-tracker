@@ -1,7 +1,7 @@
-import { ExportRequestSchema } from "@acme/api";
-import { getDb, schema } from "@acme/db";
 import { ensureSubscription } from "@/lib/ai";
 import { requireUser } from "@/lib/session";
+import { ExportRequestSchema } from "@acme/api";
+import { getDb, schema } from "@acme/db";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import * as XLSX from "xlsx";
@@ -17,7 +17,7 @@ function getMonthRange(month: string) {
   const end = new Date(Date.UTC(year, monthIndex + 1, 0));
   return {
     startString: start.toISOString().slice(0, 10),
-    endString: end.toISOString().slice(0, 10)
+    endString: end.toISOString().slice(0, 10),
   };
 }
 
@@ -44,9 +44,9 @@ export async function POST(request: Request) {
     where: and(
       eq(schema.transaction.userId, user.id),
       gte(schema.transaction.date, range.startString),
-      lte(schema.transaction.date, range.endString)
+      lte(schema.transaction.date, range.endString),
     ),
-    orderBy: (transaction, { desc }) => [desc(transaction.date)]
+    orderBy: (transaction, { desc }) => [desc(transaction.date)],
   });
 
   const headers = [
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     "category",
     "subcategory",
     "paymentMode",
-    "notes"
+    "notes",
   ];
   const rows = items.map((item) => [
     item.date,
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     item.category ?? "",
     item.subcategory ?? "",
     item.paymentMode,
-    item.notes ?? ""
+    item.notes ?? "",
   ]);
 
   if (format === "xlsx") {
@@ -78,10 +78,9 @@ export async function POST(request: Request) {
 
     return new Response(buffer, {
       headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition": `attachment; filename="transactions-${month}.xlsx"`
-      }
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": `attachment; filename="transactions-${month}.xlsx"`,
+      },
     });
   }
 
@@ -95,7 +94,7 @@ export async function POST(request: Request) {
       x: 40,
       y,
       size: 16,
-      font
+      font,
     });
     y -= 24;
 
@@ -110,28 +109,22 @@ export async function POST(request: Request) {
     }
 
     const pdfBytes = await pdf.save();
-    return new Response(pdfBytes, {
+    return new Response(new Uint8Array(pdfBytes), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="transactions-${month}.pdf"`
-      }
+        "Content-Disposition": `attachment; filename="transactions-${month}.pdf"`,
+      },
     });
   }
 
   const csv = [headers, ...rows]
-    .map((row) =>
-      row
-        .map((value) =>
-          `"${String(value ?? "").replace(/"/g, '""')}"`
-        )
-        .join(",")
-    )
+    .map((row) => row.map((value) => `"${String(value ?? "").replace(/"/g, '""')}"`).join(","))
     .join("\n");
 
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="transactions-${month}.csv"`
-    }
+      "Content-Disposition": `attachment; filename="transactions-${month}.csv"`,
+    },
   });
 }

@@ -12,9 +12,15 @@
   "dependencies": {
     "@acme/api": "workspace:*",
     "@acme/db": "workspace:*",
-    "@trpc/server": "^11.0.0",
-    "superjson": "^2.2.1",
+    "@trpc/server": "^11.19.0",
     "pdf-lib": "^1.17.1",
-    "xlsx": "^0.18.5"
+    "superjson": "^2.2.6",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "drizzle-orm": "^0.45.3",
+    "zod": "^3.25.76"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   }
 }

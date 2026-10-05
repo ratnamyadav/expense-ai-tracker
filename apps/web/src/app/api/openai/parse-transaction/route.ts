@@ -1,6 +1,6 @@
-import { ParseRequestSchema } from "@acme/api";
 import { parseTransaction } from "@/lib/ai";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { ParseRequestSchema } from "@acme/api";
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization") ?? "";

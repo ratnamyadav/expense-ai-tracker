@@ -13,7 +13,7 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value);
 }
 
@@ -51,7 +51,7 @@ export default function SummaryPage() {
         link.click();
         URL.revokeObjectURL(url);
       }
-    }
+    },
   });
 
   const summary = summaryQuery.data;
@@ -61,9 +61,7 @@ export default function SummaryPage() {
       <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-              Month
-            </p>
+            <p className="text-xs uppercase tracking-[0.3em] text-white/50">Month</p>
             <input
               type="month"
               value={month}
@@ -74,9 +72,7 @@ export default function SummaryPage() {
           <div className="flex items-center gap-2">
             <select
               value={format}
-              onChange={(event) =>
-                setFormat(event.target.value as "csv" | "xlsx" | "pdf")
-              }
+              onChange={(event) => setFormat(event.target.value as "csv" | "xlsx" | "pdf")}
               className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm"
             >
               <option value="csv">CSV</option>
@@ -97,25 +93,19 @@ export default function SummaryPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-            Total income
-          </p>
+          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Total income</p>
           <p className="mt-2 text-3xl font-semibold">
             {summary ? formatCurrency(summary.totalIncome) : "--"}
           </p>
         </div>
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-            Total expense
-          </p>
+          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Total expense</p>
           <p className="mt-2 text-3xl font-semibold">
             {summary ? formatCurrency(summary.totalExpense) : "--"}
           </p>
         </div>
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-            Net balance
-          </p>
+          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Net balance</p>
           <p className="mt-2 text-3xl font-semibold">
             {summary ? formatCurrency(summary.netBalance) : "--"}
           </p>
@@ -133,9 +123,7 @@ export default function SummaryPage() {
               <span>{item.category}</span>
               <span>{formatCurrency(item.total)}</span>
             </div>
-          )) ?? (
-            <p className="text-white/50">No expenses logged yet.</p>
-          )}
+          )) ?? <p className="text-white/50">No expenses logged yet.</p>}
         </div>
       </div>
     </div>

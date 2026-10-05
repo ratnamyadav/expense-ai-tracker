@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+import { trpc } from "@/lib/trpc";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,10 +23,11 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await authClient.emailOtp.sendVerificationOtp({
+      const result = await authClient.emailOtp.sendVerificationOtp({
         email,
-        type: "sign-in"
+        type: "sign-in",
       });
+      if (result.error) throw new Error(result.error.message ?? "Unable to send code");
       setStep("otp");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to send code");
@@ -39,10 +40,11 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await authClient.signIn.emailOtp({
+      const result = await authClient.signIn.emailOtp({
         email,
-        otp
+        otp,
       });
+      if (result.error) throw new Error(result.error.message ?? "Unable to verify code");
       if (accepted) {
         await consentMutation.mutateAsync({ version: "v1" });
       }
@@ -62,7 +64,8 @@ export default function LoginPage() {
     }
     try {
       window.localStorage.setItem("consent:pending", "v1");
-      await authClient.signIn.social({ provider });
+      const result = await authClient.signIn.social({ provider });
+      if (result.error) throw new Error(result.error.message ?? "Unable to sign in");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to sign in");
     }
@@ -72,15 +75,10 @@ export default function LoginPage() {
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col justify-center gap-10 px-6 py-16">
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
-          <p className="text-xs uppercase tracking-[0.45em] text-white/50">
-            Expense AI Tracker
-          </p>
-          <h1 className="text-5xl font-semibold leading-tight">
-            Log expenses with a simple chat.
-          </h1>
+          <p className="text-xs uppercase tracking-[0.45em] text-white/50">Expense AI Tracker</p>
+          <h1 className="text-5xl font-semibold leading-tight">Log expenses with a simple chat.</h1>
           <p className="text-lg text-white/70">
-            Continue with email OTP and start turning messages into structured
-            income and expenses.
+            Continue with email OTP and start turning messages into structured income and expenses.
           </p>
           <div className="flex flex-col gap-3">
             <button
@@ -159,19 +157,10 @@ export default function LoginPage() {
             <Button
               type="button"
               onClick={step === "email" ? handleSendOtp : handleVerifyOtp}
-              disabled={
-                loading ||
-                !email ||
-                (step === "otp" && !otp) ||
-                !accepted
-              }
+              disabled={loading || !email || (step === "otp" && !otp) || !accepted}
               className="w-full disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading
-                ? "Working..."
-                : step === "email"
-                  ? "Send code"
-                  : "Verify & continue"}
+              {loading ? "Working..." : step === "email" ? "Send code" : "Verify & continue"}
             </Button>
           </div>
         </div>

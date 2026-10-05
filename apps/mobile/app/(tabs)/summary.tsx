@@ -1,13 +1,6 @@
-import { trpc } from "../../src/lib/trpc";
 import { useState } from "react";
-import {
-  Alert,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from "react-native";
+import { Alert, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import { trpc } from "../../src/lib/trpc";
 
 function getCurrentMonth() {
   const now = new Date();
@@ -19,7 +12,7 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value);
 }
 
@@ -34,7 +27,7 @@ export default function SummaryScreen() {
     },
     onError: () => {
       Alert.alert("Upgrade required", "Upgrade to Pro to export data.");
-    }
+    },
   });
 
   const summary = summaryQuery.data;
@@ -75,18 +68,18 @@ export default function SummaryScreen() {
         )) ?? <Text style={styles.rowText}>No expenses logged yet.</Text>}
       </View>
 
-  <Text
-    style={styles.exportLink}
-    onPress={() => {
-      if (subscriptionQuery.data?.features.canExport) {
-        exportMutation.mutate({ month, format: "csv" });
-      } else {
-        Alert.alert("Upgrade required", "Upgrade to Pro to export data.");
-      }
-    }}
-  >
-    Export CSV (Pro)
-  </Text>
+      <Text
+        style={styles.exportLink}
+        onPress={() => {
+          if (subscriptionQuery.data?.features.canExport) {
+            exportMutation.mutate({ month, format: "csv" });
+          } else {
+            Alert.alert("Upgrade required", "Upgrade to Pro to export data.");
+          }
+        }}
+      >
+        Export CSV (Pro)
+      </Text>
     </SafeAreaView>
   );
 }
@@ -96,20 +89,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0c0f14",
     padding: 16,
-    gap: 12
+    gap: 12,
   },
   card: {
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
     backgroundColor: "rgba(255,255,255,0.05)",
-    padding: 16
+    padding: 16,
   },
   label: {
     color: "rgba(248,250,252,0.6)",
     fontSize: 10,
     textTransform: "uppercase",
-    letterSpacing: 1.5
+    letterSpacing: 1.5,
   },
   input: {
     marginTop: 8,
@@ -118,33 +111,33 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.15)",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    color: "#f8fafc"
+    color: "#f8fafc",
   },
   metricLabel: {
     color: "rgba(248,250,252,0.6)",
-    fontSize: 12
+    fontSize: 12,
   },
   metricValue: {
     marginTop: 6,
     fontSize: 22,
     color: "#f8fafc",
-    fontWeight: "600"
+    fontWeight: "600",
   },
   sectionTitle: {
     color: "#f8fafc",
     fontWeight: "600",
-    marginBottom: 8
+    marginBottom: 8,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 6
+    paddingVertical: 6,
   },
   rowText: {
-    color: "rgba(248,250,252,0.7)"
+    color: "rgba(248,250,252,0.7)",
   },
   exportLink: {
     color: "#f8fafc",
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 });

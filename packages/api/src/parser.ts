@@ -1,4 +1,4 @@
-import { ParsedTransactionSchema, type ParsedTransaction } from "./schemas";
+import { type ParsedTransaction, ParsedTransactionSchema } from "./schemas";
 
 const incomeKeywords = [
   "salary",
@@ -8,7 +8,7 @@ const incomeKeywords = [
   "credit",
   "bonus",
   "invoice",
-  "payment"
+  "payment",
 ];
 const refundKeywords = ["refund", "reversal", "cashback"];
 const expenseKeywords = [
@@ -24,7 +24,7 @@ const expenseKeywords = [
   "uber",
   "taxi",
   "petrol",
-  "fuel"
+  "fuel",
 ];
 
 const paymentModeMap: Array<[RegExp, ParsedTransaction["payment_mode"]]> = [
@@ -32,7 +32,7 @@ const paymentModeMap: Array<[RegExp, ParsedTransaction["payment_mode"]]> = [
   [/\bcard\b|\bcredit\b|\bdebit\b/i, "card"],
   [/\bcash\b/i, "cash"],
   [/\bbank\b|\btransfer\b|\bneft\b|\bimps\b/i, "bank"],
-  [/\bwallet\b|\bpaytm\b|\bphonepe\b/i, "wallet"]
+  [/\bwallet\b|\bpaytm\b|\bphonepe\b/i, "wallet"],
 ];
 
 const categoryMap: Array<[RegExp, string]> = [
@@ -44,7 +44,7 @@ const categoryMap: Array<[RegExp, string]> = [
   [/\btravel\b|\bflight\b|\bhotel\b/i, "Travel"],
   [/\bdoctor\b|\bpharmacy\b|\bhealth\b|\bmedical\b/i, "Health"],
   [/\bsalary\b|\bpayroll\b/i, "Salary"],
-  [/\bclient\b|\bproject\b|\bconsulting\b/i, "Business"]
+  [/\bclient\b|\bproject\b|\bconsulting\b/i, "Business"],
 ];
 
 function toDateString(date: Date) {
@@ -69,7 +69,9 @@ function parseDate(text: string, now: Date) {
   if (match) {
     const day = Number(match[1]);
     const month = Number(match[2]);
-    const year = match[3] ? Number(match[3].length === 2 ? `20${match[3]}` : match[3]) : now.getFullYear();
+    const year = match[3]
+      ? Number(match[3].length === 2 ? `20${match[3]}` : match[3])
+      : now.getFullYear();
     const parsed = new Date(year, month - 1, day);
     if (!Number.isNaN(parsed.getTime())) {
       return toDateString(parsed);
@@ -80,9 +82,7 @@ function parseDate(text: string, now: Date) {
 }
 
 function parseAmount(text: string) {
-  const match = text
-    .replace(/,/g, "")
-    .match(/(?:rs\.?|inr)?\s*(\d+(?:\.\d+)?)/i);
+  const match = text.replace(/,/g, "").match(/(?:rs\.?|inr)?\s*(\d+(?:\.\d+)?)/i);
   if (!match) {
     return null;
   }
@@ -152,7 +152,7 @@ export function parseTransactionLocally(text: string, now = new Date()): ParsedT
     payment_mode,
     date,
     confidence: Math.min(1, confidence),
-    needs_confirmation: true
+    needs_confirmation: true,
   };
 
   return ParsedTransactionSchema.parse(parsed);

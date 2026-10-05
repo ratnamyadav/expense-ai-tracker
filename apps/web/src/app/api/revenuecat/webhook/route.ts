@@ -7,7 +7,7 @@ const activeEvents = new Set([
   "UNCANCELLATION",
   "PRODUCT_CHANGE",
   "TRANSFER",
-  "TRIAL_CONVERTED"
+  "TRIAL_CONVERTED",
 ]);
 
 const trialEvents = new Set(["TRIAL_STARTED"]);
@@ -62,12 +62,8 @@ export async function POST(request: Request) {
     status = "canceled";
   }
 
-  const currentPeriodStart = event.purchased_at_ms
-    ? new Date(event.purchased_at_ms)
-    : null;
-  const currentPeriodEnd = event.expiration_at_ms
-    ? new Date(event.expiration_at_ms)
-    : null;
+  const currentPeriodStart = event.purchased_at_ms ? new Date(event.purchased_at_ms) : null;
+  const currentPeriodEnd = event.expiration_at_ms ? new Date(event.expiration_at_ms) : null;
 
   const isPro = status === "active" || status === "trial";
   const plan = isPro ? "pro" : "free";
@@ -83,7 +79,7 @@ export async function POST(request: Request) {
       entriesLimit,
       entriesUsed: 0,
       currentPeriodStart,
-      currentPeriodEnd
+      currentPeriodEnd,
     })
     .onConflictDoUpdate({
       target: schema.subscription.userId,
@@ -94,8 +90,8 @@ export async function POST(request: Request) {
         entriesLimit,
         currentPeriodStart,
         currentPeriodEnd,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
   return new Response("OK", { status: 200 });

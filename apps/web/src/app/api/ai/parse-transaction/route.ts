@@ -1,7 +1,7 @@
-import { ParseRequestSchema } from "@acme/api";
 import { parseTransaction } from "@/lib/ai";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { requireUser } from "@/lib/session";
+import { ParseRequestSchema } from "@acme/api";
 
 export async function POST(request: Request) {
   const user = await requireUser();

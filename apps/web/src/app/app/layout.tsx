@@ -1,10 +1,10 @@
-import Link from "next/link";
-import { getSession } from "@/lib/session";
-import { redirect } from "next/navigation";
 import { ConsentSync } from "@/components/consent-sync";
+import { getSession } from "@/lib/session";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function AppLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
@@ -39,9 +39,7 @@ export default async function AppLayout({
           </nav>
         </div>
       </header>
-      <main className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
-        {children}
-      </main>
+      <main className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">{children}</main>
     </div>
   );
 }

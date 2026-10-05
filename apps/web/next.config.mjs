@@ -2,9 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["@acme/api", "@acme/db"],
-  experimental: {
-    typedRoutes: true
-  }
+  typedRoutes: true,
 };
 
 export default nextConfig;

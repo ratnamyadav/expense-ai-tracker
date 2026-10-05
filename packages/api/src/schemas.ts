@@ -3,24 +3,15 @@ import { z } from "zod";
 export const HealthSchema = z.object({
   ok: z.boolean(),
   app: z.string(),
-  timestamp: z.string()
+  timestamp: z.string(),
 });
 
 export type Health = z.infer<typeof HealthSchema>;
 
 export const TransactionTypeSchema = z.enum(["expense", "income", "refund"]);
-export const PaymentModeSchema = z.enum([
-  "cash",
-  "upi",
-  "card",
-  "bank",
-  "wallet",
-  "unknown"
-]);
+export const PaymentModeSchema = z.enum(["cash", "upi", "card", "bank", "wallet", "unknown"]);
 
-export const DateStringSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/);
+export const DateStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
 export const ParsedTransactionSchema = z.object({
   type: TransactionTypeSchema.nullable(),
@@ -31,7 +22,7 @@ export const ParsedTransactionSchema = z.object({
   payment_mode: PaymentModeSchema.nullable(),
   date: DateStringSchema.nullable(),
   confidence: z.number().min(0).max(1),
-  needs_confirmation: z.boolean()
+  needs_confirmation: z.boolean(),
 });
 
 export type ParsedTransaction = z.infer<typeof ParsedTransactionSchema>;
@@ -49,7 +40,7 @@ export const TransactionSchema = z.object({
   notes: z.string().nullable(),
   source: z.string(),
   createdAt: z.string(),
-  updatedAt: z.string()
+  updatedAt: z.string(),
 });
 
 export type Transaction = z.infer<typeof TransactionSchema>;
@@ -63,7 +54,7 @@ export const TransactionInputSchema = z.object({
   paymentMode: PaymentModeSchema.default("unknown"),
   date: DateStringSchema,
   notes: z.string().nullable().default(null),
-  source: z.string().default("chat")
+  source: z.string().default("chat"),
 });
 
 export const TransactionUpdateSchema = TransactionInputSchema.partial();
@@ -76,9 +67,9 @@ export const MonthlySummarySchema = z.object({
   categoryBreakdown: z.array(
     z.object({
       category: z.string(),
-      total: z.number()
-    })
-  )
+      total: z.number(),
+    }),
+  ),
 });
 
 export type MonthlySummary = z.infer<typeof MonthlySummarySchema>;
@@ -93,31 +84,31 @@ export const SubscriptionSchema = z.object({
   currentPeriodEnd: z.string().nullable(),
   features: z.object({
     canExport: z.boolean(),
-    unlimitedEntries: z.boolean()
-  })
+    unlimitedEntries: z.boolean(),
+  }),
 });
 
 export type SubscriptionStatus = z.infer<typeof SubscriptionSchema>;
 
 export const ParseRequestSchema = z.object({
   text: z.string().min(1),
-  locale: z.string().optional()
+  locale: z.string().optional(),
 });
 
 export const ParseResponseSchema = ParsedTransactionSchema;
 
 export const TransactionListSchema = z.object({
-  items: z.array(TransactionSchema)
+  items: z.array(TransactionSchema),
 });
 
 export const ExportRequestSchema = z.object({
   month: z.string(),
-  format: z.enum(["csv", "xlsx", "pdf"]).default("csv")
+  format: z.enum(["csv", "xlsx", "pdf"]).default("csv"),
 });
 
 export const ConsentSchema = z.object({
   version: z.string(),
-  acceptedAt: z.string()
+  acceptedAt: z.string(),
 });
 
 export const Categories = [
@@ -130,7 +121,7 @@ export const Categories = [
   "Salary",
   "Business",
   "Rent",
-  "Other"
+  "Other",
 ] as const;
 
 export const CategorySchema = z.enum(Categories);

@@ -1,9 +1,9 @@
-import { Tabs, Redirect } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Redirect, Tabs } from "expo-router";
+import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { useSession } from "../../src/hooks/use-session";
 import { trpc } from "../../src/lib/trpc";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react";
 
 export default function TabsLayout() {
   const { data, isLoading } = useSession();
@@ -29,7 +29,7 @@ export default function TabsLayout() {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#0c0f14"
+          backgroundColor: "#0c0f14",
         }}
       >
         <ActivityIndicator color="#f8fafc" />
@@ -47,10 +47,10 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#0c0f14",
-          borderTopColor: "rgba(255,255,255,0.1)"
+          borderTopColor: "rgba(255,255,255,0.1)",
         },
         tabBarActiveTintColor: "#f8fafc",
-        tabBarInactiveTintColor: "rgba(248,250,252,0.5)"
+        tabBarInactiveTintColor: "rgba(248,250,252,0.5)",
       }}
     >
       <Tabs.Screen name="home" options={{ title: "Chat" }} />

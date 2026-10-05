@@ -1,7 +1,7 @@
-import { appRouter } from "@acme/trpc";
-import { getDb } from "@acme/db";
-import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { auth } from "@/lib/auth";
+import { getDb } from "@acme/db";
+import { appRouter } from "@acme/trpc";
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 const handler = (request: Request) =>
   fetchRequestHandler({
@@ -12,9 +12,9 @@ const handler = (request: Request) =>
       const session = await auth.api.getSession({ headers: request.headers });
       return {
         userId: session?.user?.id ?? null,
-        db: getDb()
+        db: getDb(),
       };
-    }
+    },
   });
 
 export const GET = handler;

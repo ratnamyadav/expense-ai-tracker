@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Categories,
-  PaymentModeSchema,
-  TransactionTypeSchema
-} from "@acme/api";
+import { Categories, PaymentModeSchema, TransactionTypeSchema } from "@acme/api";
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogOverlay } from "./ui/dialog";
 
@@ -22,7 +18,7 @@ export function EditEntryModal({
   open,
   value,
   onClose,
-  onSave
+  onSave,
 }: {
   open: boolean;
   value: EditableEntry;
@@ -32,7 +28,7 @@ export function EditEntryModal({
   const [draft, setDraft] = useState(value);
 
   useEffect(() => {
-    setDraft(value);
+    if (open) setDraft(value);
   }, [value, open]);
 
   return (
@@ -41,11 +37,7 @@ export function EditEntryModal({
       <DialogContent>
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">Edit entry</h3>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-sm text-white/60"
-          >
+          <button type="button" onClick={onClose} className="text-sm text-white/60">
             Close
           </button>
         </div>
@@ -58,7 +50,7 @@ export function EditEntryModal({
               onChange={(event) =>
                 setDraft({
                   ...draft,
-                  type: TransactionTypeSchema.parse(event.target.value)
+                  type: TransactionTypeSchema.parse(event.target.value),
                 })
               }
               className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2"
@@ -79,7 +71,7 @@ export function EditEntryModal({
               onChange={(event) =>
                 setDraft({
                   ...draft,
-                  amount: Number(event.target.value)
+                  amount: Number(event.target.value),
                 })
               }
               className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2"
@@ -93,7 +85,7 @@ export function EditEntryModal({
               onChange={(event) =>
                 setDraft({
                   ...draft,
-                  category: event.target.value || null
+                  category: event.target.value || null,
                 })
               }
               className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2"
@@ -115,7 +107,7 @@ export function EditEntryModal({
               onChange={(event) =>
                 setDraft({
                   ...draft,
-                  date: event.target.value
+                  date: event.target.value,
                 })
               }
               className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2"
@@ -129,7 +121,7 @@ export function EditEntryModal({
               onChange={(event) =>
                 setDraft({
                   ...draft,
-                  paymentMode: PaymentModeSchema.parse(event.target.value)
+                  paymentMode: PaymentModeSchema.parse(event.target.value),
                 })
               }
               className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2"
@@ -149,7 +141,7 @@ export function EditEntryModal({
               onChange={(event) =>
                 setDraft({
                   ...draft,
-                  notes: event.target.value || null
+                  notes: event.target.value || null,
                 })
               }
               className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2"

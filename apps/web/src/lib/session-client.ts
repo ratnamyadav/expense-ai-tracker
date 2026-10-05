@@ -6,6 +6,10 @@ import { authClient } from "./auth-client";
 export function useSession() {
   return useQuery({
     queryKey: ["session"],
-    queryFn: () => authClient.getSession()
+    queryFn: async () => {
+      const result = await authClient.getSession();
+      if (result.error) throw new Error(result.error.message ?? "Unable to load session");
+      return result.data;
+    },
   });
 }

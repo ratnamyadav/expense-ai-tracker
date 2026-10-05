@@ -1,16 +1,20 @@
 "use client";
 
-import {
-  PaymentModeSchema,
-  TransactionTypeSchema,
-  parseTransactionLocally
-} from "@acme/api";
 import { EditEntryModal, type EditableEntry } from "@/components/edit-entry-modal";
 import { Card } from "@/components/ui/card";
-import { useChatStore } from "@/stores/chat";
 import { trpc } from "@/lib/trpc";
+import { useChatStore } from "@/stores/chat";
+import { PaymentModeSchema, TransactionTypeSchema, parseTransactionLocally } from "@acme/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+
+type SpeechRecognitionInstance = {
+  lang: string;
+  interimResults: boolean;
+  onresult: ((event: { results?: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  start: () => void;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 
 function getCurrentMonth() {
   const now = new Date();
@@ -22,7 +26,7 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value);
 }
 
@@ -40,7 +44,7 @@ export default function HomePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["summary", month] });
       queryClient.invalidateQueries({ queryKey: ["transactions", month] });
-    }
+    },
   });
 
   const parseMutation = trpc.ai.parseTransaction.useMutation();
@@ -50,13 +54,17 @@ export default function HomePage() {
       return null;
     }
     const SpeechRecognition =
-      (window as typeof window & {
-        SpeechRecognition?: typeof window.SpeechRecognition;
-        webkitSpeechRecognition?: typeof window.SpeechRecognition;
-      }).SpeechRecognition ||
-      (window as typeof window & {
-        webkitSpeechRecognition?: typeof window.SpeechRecognition;
-      }).webkitSpeechRecognition;
+      (
+        window as typeof window & {
+          SpeechRecognition?: SpeechRecognitionConstructor;
+          webkitSpeechRecognition?: SpeechRecognitionConstructor;
+        }
+      ).SpeechRecognition ||
+      (
+        window as typeof window & {
+          webkitSpeechRecognition?: SpeechRecognitionConstructor;
+        }
+      ).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       return null;
@@ -89,15 +97,14 @@ export default function HomePage() {
     if (!parsed.amount || !parsed.type) {
       addMessage({
         role: "assistant",
-          content:
-            "I need the amount and whether it's income or expense. Can you clarify?"
+        content: "I need the amount and whether it's income or expense. Can you clarify?",
       });
       return;
     }
 
     addMessage({
       role: "assistant",
-      content: "Here's what I parsed. Please confirm or edit before saving."
+      content: "Here's what I parsed. Please confirm or edit before saving.",
     });
 
     const today = new Date().toISOString().slice(0, 10);
@@ -107,10 +114,8 @@ export default function HomePage() {
       category: parsed.category,
       subcategory: parsed.subcategory,
       date: parsed.date ?? today,
-      paymentMode: parsed.payment_mode
-        ? PaymentModeSchema.parse(parsed.payment_mode)
-        : "unknown",
-      notes: null
+      paymentMode: parsed.payment_mode ? PaymentModeSchema.parse(parsed.payment_mode) : "unknown",
+      notes: null,
     });
   }
 
@@ -125,14 +130,12 @@ export default function HomePage() {
         paymentMode: entry.paymentMode,
         date: entry.date,
         notes: entry.notes,
-        source: "chat"
+        source: "chat",
       });
       setPending(null);
       setEditing(false);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to save transaction"
-      );
+      setError(err instanceof Error ? err.message : "Unable to save transaction");
     }
   }
 
@@ -159,9 +162,7 @@ export default function HomePage() {
         <Card>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                Month
-              </p>
+              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Month</p>
               <input
                 type="month"
                 value={month}
@@ -170,15 +171,13 @@ export default function HomePage() {
               />
             </div>
             <div className="text-right">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                Net balance
-              </p>
+              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Net balance</p>
               <p className="text-3xl font-semibold">
                 {summary ? formatCurrency(summary.netBalance) : "--"}
               </p>
               <p className="text-sm text-white/60">
-                Income {summary ? formatCurrency(summary.totalIncome) : "--"} -
-                Expense {summary ? formatCurrency(summary.totalExpense) : "--"}
+                Income {summary ? formatCurrency(summary.totalIncome) : "--"} - Expense{" "}
+                {summary ? formatCurrency(summary.totalExpense) : "--"}
               </p>
             </div>
           </div>
@@ -275,9 +274,8 @@ export default function HomePage() {
             </button>
           </div>
           <p className="mt-3 text-xs text-white/50">
-            AI suggestions are drafts only. You must confirm before saving. Voice
-            input uses on-device/browser speech recognition and does not upload
-            audio.
+            AI suggestions are drafts only. You must confirm before saving. Voice input uses
+            on-device/browser speech recognition and does not upload audio.
           </p>
         </Card>
       </section>
@@ -285,9 +283,7 @@ export default function HomePage() {
       <section className="space-y-6">
         <Card>
           <h3 className="text-lg font-semibold">Monthly summary</h3>
-          <p className="text-sm text-white/60">
-            Category-wise breakdown for {month}.
-          </p>
+          <p className="text-sm text-white/60">Category-wise breakdown for {month}.</p>
           <div className="mt-4 space-y-2 text-sm">
             {summary?.categoryBreakdown.map((entry) => (
               <div
@@ -297,9 +293,7 @@ export default function HomePage() {
                 <span>{entry.category}</span>
                 <span>{formatCurrency(entry.total)}</span>
               </div>
-            )) ?? (
-              <p className="text-white/50">No expenses logged yet.</p>
-            )}
+            )) ?? <p className="text-white/50">No expenses logged yet.</p>}
           </div>
         </Card>
 

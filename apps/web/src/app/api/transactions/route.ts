@@ -1,11 +1,8 @@
-import {
-  TransactionInputSchema,
-  TransactionListSchema
-} from "@acme/api";
-import { getDb, schema } from "@acme/db";
 import { ensureSubscription, incrementUsage } from "@/lib/ai";
 import { serializeTransaction } from "@/lib/serializers";
 import { requireUser } from "@/lib/session";
+import { TransactionInputSchema, TransactionListSchema } from "@acme/api";
+import { getDb, schema } from "@acme/db";
 import { and, eq, gte, lte, sql } from "drizzle-orm";
 
 function getMonthRange(month: string) {
@@ -41,18 +38,18 @@ export async function GET(request: Request) {
         return and(
           eq(schema.transaction.userId, user.id),
           gte(schema.transaction.date, range.startString),
-          lte(schema.transaction.date, range.endString)
+          lte(schema.transaction.date, range.endString),
         );
       })()
     : eq(schema.transaction.userId, user.id);
 
   const items = await db.query.transaction.findMany({
     where,
-    orderBy: (transaction, { desc }) => [desc(transaction.date)]
+    orderBy: (transaction, { desc }) => [desc(transaction.date)],
   });
 
   const payload = TransactionListSchema.parse({
-    items: items.map(serializeTransaction)
+    items: items.map(serializeTransaction),
   });
 
   return Response.json(payload);
@@ -79,13 +76,13 @@ export async function POST(request: Request) {
           and(
             eq(schema.transaction.userId, user.id),
             gte(schema.transaction.date, range.startString),
-            lte(schema.transaction.date, range.endString)
-          )
+            lte(schema.transaction.date, range.endString),
+          ),
         );
 
       if (Number(count) >= subscription.entriesLimit) {
         return new Response("Monthly limit reached. Upgrade to Pro.", {
-          status: 402
+          status: 402,
         });
       }
     }
@@ -104,7 +101,7 @@ export async function POST(request: Request) {
       paymentMode: input.paymentMode,
       date: input.date,
       notes: input.notes ?? null,
-      source: input.source
+      source: input.source,
     })
     .returning();
 

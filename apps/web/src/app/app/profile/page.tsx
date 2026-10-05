@@ -2,18 +2,16 @@
 
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc";
-import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 
 export default function ProfilePage() {
   const subscriptionQuery = trpc.subscription.get.useQuery();
 
-  const deleteMutation = useMutation({
-    mutationFn: () => trpc.account.delete.mutate(),
+  const deleteMutation = trpc.account.delete.useMutation({
     onSuccess: async () => {
       await authClient.signOut();
       window.location.href = "/login";
-    }
+    },
   });
 
   return (
@@ -28,8 +26,8 @@ export default function ProfilePage() {
           {subscriptionQuery.data?.entriesLimit ?? "--"}
         </p>
         <p className="mt-2 text-xs text-white/50">
-          Subscriptions are billed through the App Store or Play Store. Cancel
-          anytime in your account settings.
+          Subscriptions are billed through the App Store or Play Store. Cancel anytime in your
+          account settings.
         </p>
         <button
           type="button"
@@ -44,7 +42,9 @@ export default function ProfilePage() {
         <div className="mt-4 flex flex-col gap-2 text-sm">
           <button
             type="button"
-            onClick={() => (window.location.href = "/app/summary")}
+            onClick={() => {
+              window.location.href = "/app/summary";
+            }}
             className="rounded-2xl border border-white/20 px-3 py-2 text-left"
           >
             Export data (Pro)

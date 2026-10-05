@@ -1,18 +1,18 @@
 import {
   ExportRequestSchema,
   HealthSchema,
+  type MonthlySummary,
   MonthlySummarySchema,
   ParseRequestSchema,
   ParseResponseSchema,
+  type ParsedTransaction,
   SubscriptionSchema,
+  type SubscriptionStatus,
+  type Transaction,
   TransactionInputSchema,
   TransactionListSchema,
   TransactionSchema,
   TransactionUpdateSchema,
-  type MonthlySummary,
-  type ParsedTransaction,
-  type SubscriptionStatus,
-  type Transaction
 } from "./schemas";
 
 export type ApiClient = {
@@ -38,19 +38,15 @@ export function createApiClient(options: {
     options.baseUrl ||
     (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
 
-  async function request<T>(
-    path: string,
-    init?: RequestInit,
-    parser?: (data: unknown) => T
-  ) {
+  async function request<T>(path: string, init?: RequestInit, parser?: (data: unknown) => T) {
     const url = new URL(path, resolvedBaseUrl);
     const response = await fetchFn(url.toString(), {
       credentials: "include",
       ...init,
       headers: {
         Accept: "application/json",
-        ...(init?.headers ?? {})
-      }
+        ...(init?.headers ?? {}),
+      },
     });
 
     if (!response.ok) {
@@ -78,11 +74,11 @@ export function createApiClient(options: {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
         },
-        (data) => ParseResponseSchema.parse(data)
+        (data) => ParseResponseSchema.parse(data),
       );
     },
     async listTransactions(month) {
@@ -97,11 +93,11 @@ export function createApiClient(options: {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
         },
-        (data) => TransactionSchema.parse(data)
+        (data) => TransactionSchema.parse(data),
       );
     },
     async updateTransaction(id, input) {
@@ -111,11 +107,11 @@ export function createApiClient(options: {
         {
           method: "PATCH",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
         },
-        (data) => TransactionSchema.parse(data)
+        (data) => TransactionSchema.parse(data),
       );
     },
     async deleteTransaction(id) {
@@ -125,7 +121,7 @@ export function createApiClient(options: {
       const data = await request(
         `/api/summary?month=${encodeURIComponent(month)}`,
         undefined,
-        (d) => MonthlySummarySchema.parse(d)
+        (d) => MonthlySummarySchema.parse(d),
       );
       return data;
     },
@@ -138,10 +134,10 @@ export function createApiClient(options: {
       const response = await fetchFn(url.toString(), {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -155,13 +151,13 @@ export function createApiClient(options: {
       await request("/api/account/consent", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ version })
+        body: JSON.stringify({ version }),
       });
     },
     async deleteAccount() {
       await request("/api/account/delete", { method: "POST" });
-    }
+    },
   };
 }

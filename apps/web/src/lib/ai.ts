@@ -1,9 +1,5 @@
 import { parseTransactionLocally } from "@acme/api";
-import {
-  ParseResponseSchema,
-  ParsedTransactionSchema,
-  type ParsedTransaction
-} from "@acme/api";
+import { ParseResponseSchema, type ParsedTransaction, ParsedTransactionSchema } from "@acme/api";
 import { getDb, schema } from "@acme/db";
 import { and, eq, gte, lte, sql } from "drizzle-orm";
 
@@ -23,7 +19,7 @@ async function parseWithOpenAI(text: string): Promise<ParsedTransaction | null> 
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       model,
@@ -31,16 +27,16 @@ async function parseWithOpenAI(text: string): Promise<ParsedTransaction | null> 
         {
           role: "system",
           content:
-            "Return a JSON object that matches the required schema. Do not include markdown or commentary."
+            "Return a JSON object that matches the required schema. Do not include markdown or commentary.",
         },
         {
           role: "user",
-          content: buildPrompt(text)
-        }
+          content: buildPrompt(text),
+        },
       ],
       response_format: { type: "json_object" },
-      temperature: 0.2
-    })
+      temperature: 0.2,
+    }),
   });
 
   if (!response.ok) {
@@ -60,32 +56,27 @@ async function parseWithOpenAI(text: string): Promise<ParsedTransaction | null> 
   return ParsedTransactionSchema.parse({
     type: parsed.type ?? null,
     amount: parsed.amount ?? null,
-    currency: \"INR\",
+    currency: "INR",
     category: parsed.category ?? null,
     subcategory: parsed.subcategory ?? null,
     payment_mode: parsed.payment_mode ?? null,
     date: parsed.date ?? null,
-    confidence: typeof parsed.confidence === \"number\" ? parsed.confidence : 0.5,
-    needs_confirmation: true
+    confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
+    needs_confirmation: true,
   });
 }
 
 export async function parseTransaction({
   userId,
-  text
+  text,
 }: {
   userId?: string;
   text: string;
 }): Promise<ParsedTransaction> {
   const local = parseTransactionLocally(text);
-  const shouldFallback =
-    local.amount === null ||
-    local.type === null ||
-    local.confidence < 0.7;
+  const shouldFallback = local.amount === null || local.type === null || local.confidence < 0.7;
 
-  const cloud = shouldFallback
-    ? await parseWithOpenAI(text).catch(() => null)
-    : null;
+  const cloud = shouldFallback ? await parseWithOpenAI(text).catch(() => null) : null;
   const result = cloud ?? local;
 
   if (userId) {
@@ -95,7 +86,7 @@ export async function parseTransaction({
       input: text,
       output: result,
       provider: cloud ? "openai" : "local",
-      confidence: String(result.confidence)
+      confidence: String(result.confidence),
     });
   }
 
@@ -105,7 +96,7 @@ export async function parseTransaction({
 export async function ensureSubscription(userId: string) {
   const db = getDb();
   const existing = await db.query.subscription.findFirst({
-    where: (subscription, { eq }) => eq(subscription.userId, userId)
+    where: (subscription, { eq }) => eq(subscription.userId, userId),
   });
 
   if (existing) {
@@ -119,7 +110,7 @@ export async function ensureSubscription(userId: string) {
       status: "free",
       plan: "free",
       entriesLimit: 50,
-      entriesUsed: 0
+      entriesUsed: 0,
     })
     .returning();
 
@@ -137,7 +128,7 @@ function getMonthRange(month: string) {
   const end = new Date(Date.UTC(year, monthIndex + 1, 0));
   return {
     startString: start.toISOString().slice(0, 10),
-    endString: end.toISOString().slice(0, 10)
+    endString: end.toISOString().slice(0, 10),
   };
 }
 
@@ -156,8 +147,8 @@ export async function incrementUsage(userId: string, date: string) {
       and(
         eq(schema.transaction.userId, userId),
         gte(schema.transaction.date, range.startString),
-        lte(schema.transaction.date, range.endString)
-      )
+        lte(schema.transaction.date, range.endString),
+      ),
     );
 
   const [updated] = await db

@@ -1,8 +1,8 @@
 "use client";
 
-import type { Transaction } from "@acme/api";
 import { EditEntryModal, type EditableEntry } from "@/components/edit-entry-modal";
 import { trpc } from "@/lib/trpc";
+import type { Transaction } from "@acme/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
@@ -31,20 +31,17 @@ export default function TransactionsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions", month] });
       queryClient.invalidateQueries({ queryKey: ["summary", month] });
-    }
+    },
   });
 
   const deleteMutation = trpc.transactions.delete.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions", month] });
       queryClient.invalidateQueries({ queryKey: ["summary", month] });
-    }
+    },
   });
 
-  const grouped = useMemo(
-    () => groupByDate(listQuery.data?.items ?? []),
-    [listQuery.data?.items]
-  );
+  const grouped = useMemo(() => groupByDate(listQuery.data?.items ?? []), [listQuery.data?.items]);
 
   return (
     <div className="space-y-6">
@@ -60,10 +57,7 @@ export default function TransactionsPage() {
 
       <div className="space-y-4">
         {Object.entries(grouped).map(([date, items]) => (
-          <div
-            key={date}
-            className="rounded-3xl border border-white/10 bg-white/5 p-6"
-          >
+          <div key={date} className="rounded-3xl border border-white/10 bg-white/5 p-6">
             <h3 className="text-lg font-semibold">{date}</h3>
             <div className="mt-4 space-y-3">
               {items.map((item) => (
@@ -89,10 +83,10 @@ export default function TransactionsPage() {
                     </button>
                     <button
                       type="button"
-                    onClick={() => deleteMutation.mutate({ id: item.id })}
-                    className="rounded-2xl border border-red-500/40 px-3 py-1 text-xs text-red-200"
-                  >
-                    Delete
+                      onClick={() => deleteMutation.mutate({ id: item.id })}
+                      className="rounded-2xl border border-red-500/40 px-3 py-1 text-xs text-red-200"
+                    >
+                      Delete
                     </button>
                   </div>
                 </div>
@@ -115,7 +109,7 @@ export default function TransactionsPage() {
             subcategory: selected.subcategory,
             date: selected.date,
             paymentMode: selected.paymentMode,
-            notes: selected.notes
+            notes: selected.notes,
           }}
           onClose={() => setSelected(null)}
           onSave={(value) => {
@@ -128,7 +122,7 @@ export default function TransactionsPage() {
               subcategory: value.subcategory,
               paymentMode: value.paymentMode,
               date: value.date,
-              notes: value.notes
+              notes: value.notes,
             });
             setSelected(null);
           }}

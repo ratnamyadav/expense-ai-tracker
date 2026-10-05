@@ -1,6 +1,6 @@
-import { SubscriptionSchema } from "@acme/api";
 import { ensureSubscription } from "@/lib/ai";
 import { requireUser } from "@/lib/session";
+import { SubscriptionSchema } from "@acme/api";
 
 export async function GET() {
   const user = await requireUser();
@@ -24,8 +24,8 @@ export async function GET() {
       : null,
     features: {
       canExport: isPro,
-      unlimitedEntries: isPro
-    }
+      unlimitedEntries: isPro,
+    },
   });
 
   return Response.json(payload);
